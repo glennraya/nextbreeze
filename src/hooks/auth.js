@@ -1,7 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
-import { axios, setCsrfToken, setBearerToken } from '@/lib/axios'
+import { axios, setBearerToken } from '@/lib/axios'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
