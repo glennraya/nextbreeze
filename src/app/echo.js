@@ -16,8 +16,6 @@ const echo = new Echo({
                         channel_name: channel.name,
                     })
                     .then(response => {
-                        // console.log(response)
-
                         callback(false, response.data)
                     })
                     .catch(error => {
@@ -26,7 +24,6 @@ const echo = new Echo({
             },
         }
     },
-
     wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
     wsPort: process.env.NEXT_PUBLIC_REVERB_PORT,
     wssPort: process.env.NEXT_PUBLIC_REVERB_PORT,

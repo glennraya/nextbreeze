@@ -3,7 +3,7 @@ import * as React from 'react'
 import { NextUIProvider } from '@nextui-org/react'
 
 export const metadata = {
-    title: 'NextJS + Laravel',
+    title: 'NextJS 14 + Laravel Reverb',
 }
 
 const RootLayout = ({ children }) => {

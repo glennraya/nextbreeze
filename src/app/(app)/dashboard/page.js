@@ -27,7 +27,7 @@ const Dashboard = () => {
     const [team, setTeam] = useState([])
 
     useEffect(() => {
-        if (user?.role === 'Project Manager')
+        if (user?.role === 'Product Owner')
             axios.post('/api/get-team-members').then(res => {
                 setTeam(res.data)
             })
@@ -60,7 +60,7 @@ const Dashboard = () => {
         <>
             <Header
                 title={
-                    user?.role === 'Project Manager'
+                    user?.role === 'Product Owner'
                         ? `Fix the bugs! 🐞`
                         : `It works on my machine! 😎`
                 }
@@ -69,7 +69,7 @@ const Dashboard = () => {
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div>
-                        <div className="grid gap-4 md:grid-cols-3">
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                             {team.map(member => (
                                 <div
                                     key={member.id}
@@ -100,7 +100,7 @@ const Dashboard = () => {
 
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="font-medium text-blue-400">
-                                                Task Completed
+                                                Tasks Completed
                                             </span>
                                             <span className="font-medium">
                                                 <span className="text-xl">

@@ -8,24 +8,38 @@ import ResponsiveNavLink, {
 import { DropdownButton } from '@/components/DropdownLink'
 import { useAuth } from '@/hooks/auth'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { axios } from '@/lib/axios'
-import { Badge, Button } from '@nextui-org/react'
+import {
+    Badge,
+    Button,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    Image,
+} from '@nextui-org/react'
 import { motion, useAnimation } from 'framer-motion'
+import { Howl } from 'howler'
 import MessageIcon from '@/components/MessageIcon'
 import useEcho from '@/hooks/echo'
 
 const Navigation = () => {
-    const controls = useAnimation()
     const { logout, user } = useAuth({ middleware: 'auth' })
+    const controls = useAnimation()
     const echo = useEcho(user)
 
     const [open, setOpen] = useState(false)
     const [unreadMessages, setUnreadMessages] = useState(0)
+    const [messages, setMessages] = useState([])
 
+    const sound = new Howl({
+        src: ['/media/bell.mp3'],
+    })
+
+    // Trigger chat message count
     const triggerAnimation = () => {
         controls.start({
-            scale: [1, 1.3, 1],
+            scale: [1, 1.5, 1],
             transition: {
                 duration: 0.5,
                 ease: 'easeInOut',
@@ -38,6 +52,7 @@ const Navigation = () => {
     const handleEchoCallback = () => {
         setUnreadMessages(prevUnread => prevUnread + 1)
         triggerAnimation()
+        sound.play()
     }
 
     useEffect(() => {
@@ -54,13 +69,18 @@ const Navigation = () => {
                 user_id: user?.id,
             })
             .then(res => {
-                setUnreadMessages(res.data)
+                setUnreadMessages(res.data.length)
+                setMessages(res.data)
             })
 
         return () => {
             if (echo) echo.leave(`chat.${user?.id}`)
         }
     }, [user, echo, unreadMessages, controls])
+
+    const fetchMessages = () => {
+        //
+    }
 
     return (
         <nav className="fixed z-20 w-full border-b border-gray-100 bg-white bg-opacity-10 backdrop-blur-md">
@@ -91,25 +111,61 @@ const Navigation = () => {
                         </div>
                     </div>
 
+                    {/* Chat messages */}
                     <div className="flex items-center">
-                        <motion.div animate={controls}>
-                            <Badge
-                                content={unreadMessages}
-                                shape="circle"
-                                size="lg"
-                                color="danger"
-                                isInvisible={unreadMessages === 0}>
-                                <Button
-                                    radius="full"
-                                    size="sm"
-                                    variant="solid"
-                                    color="primary"
-                                    isIconOnly
-                                    aria-label={`There are ${unreadMessages} unread messages.`}>
-                                    <MessageIcon />
-                                </Button>
-                            </Badge>
-                        </motion.div>
+                        <Popover placement="bottom-end" showArrow="true">
+                            <motion.div animate={controls}>
+                                <Badge
+                                    content={unreadMessages}
+                                    shape="circle"
+                                    size="lg"
+                                    color="danger"
+                                    isInvisible={unreadMessages === 0}>
+                                    <PopoverTrigger>
+                                        <Button
+                                            radius="full"
+                                            size="sm"
+                                            variant="solid"
+                                            color="primary"
+                                            isIconOnly
+                                            aria-label={`There are ${unreadMessages} unread messages.`}
+                                            onClick={fetchMessages}>
+                                            <MessageIcon />
+                                        </Button>
+                                    </PopoverTrigger>
+                                </Badge>
+                            </motion.div>
+
+                            <PopoverContent className="flex">
+                                <div className="flex w-full flex-col divide-y divide-gray-300 p-2">
+                                    {messages.map(msg => (
+                                        <div
+                                            key={msg.id}
+                                            className="flex max-w-96 gap-2 py-2">
+                                            <Image
+                                                alt="Profile pic"
+                                                className="w-full object-cover"
+                                                height={24}
+                                                src={
+                                                    `https://ui-avatars.com/api/?size=256&name=` +
+                                                    msg.from.name
+                                                }
+                                                width={24}
+                                                radius="full"
+                                            />
+                                            <div className="flex w-full flex-col">
+                                                <span className="text-sm">
+                                                    {msg.message}
+                                                </span>
+                                                <span className="text-right text-[10px] text-gray-400">
+                                                    {msg.from.name}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
 
                         {/* Settings Dropdown */}
                         <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -147,6 +203,7 @@ const Navigation = () => {
                                 </DropdownButton>
                             </Dropdown>
                         </div>
+
                         {/* Hamburger */}
                         <div className="-mr-2 flex items-center sm:hidden">
                             <button
