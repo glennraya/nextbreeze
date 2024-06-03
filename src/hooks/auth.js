@@ -1,7 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
-import { axios, setBearerToken } from '@/lib/axios'
+import axios from '@/lib/axios'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
@@ -51,10 +51,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             .post('/login', props)
             .then(res => {
                 mutate()
-                const token = res.data.token
-
-                // Set the Bearer token
-                setBearerToken(token)
+                console.log(res)
             })
             .catch(error => {
                 if (error.response.status !== 422) throw error

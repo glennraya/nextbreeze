@@ -9,7 +9,7 @@ import { DropdownButton } from '@/components/DropdownLink'
 import { useAuth } from '@/hooks/auth'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { axios } from '@/lib/axios'
+import axios from '@/lib/axios'
 import {
     Badge,
     Button,
@@ -21,12 +21,10 @@ import {
 import { motion, useAnimation } from 'framer-motion'
 import { Howl } from 'howler'
 import MessageIcon from '@/components/MessageIcon'
-import useEcho from '@/hooks/echo'
 
 const Navigation = () => {
     const { logout, user } = useAuth({ middleware: 'auth' })
     const controls = useAnimation()
-    const echo = useEcho(user)
 
     const [open, setOpen] = useState(false)
     const [unreadMessages, setUnreadMessages] = useState(0)
@@ -49,21 +47,7 @@ const Navigation = () => {
         })
     }
 
-    const handleEchoCallback = () => {
-        setUnreadMessages(prevUnread => prevUnread + 1)
-        triggerAnimation()
-        sound.play()
-    }
-
     useEffect(() => {
-        if (echo)
-            echo.private(`chat.${user?.id}`).listen('MessageSent', event => {
-                if (event.receiver.id === user?.id)
-                    console.log('Real-time event received: ', event)
-
-                handleEchoCallback()
-            })
-
         axios
             .post('/api/get-unread-messages', {
                 user_id: user?.id,
@@ -72,11 +56,7 @@ const Navigation = () => {
                 setUnreadMessages(res.data.length)
                 setMessages(res.data)
             })
-
-        return () => {
-            if (echo) echo.leave(`chat.${user?.id}`)
-        }
-    }, [user, echo, unreadMessages, controls])
+    }, [user, unreadMessages, controls])
 
     const fetchMessages = () => {
         //
