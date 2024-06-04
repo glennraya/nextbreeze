@@ -9,4 +9,9 @@ const axios = Axios.create({
     withXSRFToken: true,
 })
 
-export default axios
+// Set the Bearer auth token.
+const setBearerToken = token => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+}
+
+export { axios, setBearerToken }

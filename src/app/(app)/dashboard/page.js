@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/auth'
-import axios from '@/lib/axios'
+import { axios } from '@/lib/axios'
 import {
     Button,
     Image,
@@ -77,7 +77,7 @@ const Dashboard = () => {
                                     <div className="flex w-full flex-col gap-5">
                                         <div className="flex h-full flex-col gap-4">
                                             <Image
-                                                alt="Woman listing to music"
+                                                alt="Profile picture"
                                                 className="w-full object-cover"
                                                 height={64}
                                                 src={
